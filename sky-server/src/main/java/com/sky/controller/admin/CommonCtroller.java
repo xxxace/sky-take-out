@@ -1,7 +1,9 @@
 package com.sky.controller.admin;
 
+import com.sky.constant.MessageConstant;
 import com.sky.result.Result;
 import com.sky.utils.AliOssUtil;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin/common")
-@ApiOperation("公共控制类")
+@Api(tags = "公共控制类")
 @Slf4j
 public class CommonCtroller {
     @Autowired
@@ -34,7 +36,8 @@ public class CommonCtroller {
             return Result.success(url);
         } catch (IOException e) {
             log.error("文件上传失败", e);
-            return Result.error("文件上传失败");
         }
+
+        return Result.error(MessageConstant.UPLOAD_FAILED);
     }
 }
