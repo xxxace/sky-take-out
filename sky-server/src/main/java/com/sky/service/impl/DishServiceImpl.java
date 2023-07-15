@@ -47,7 +47,7 @@ public class DishServiceImpl implements DishService {
             dishFlavors.forEach(dishFlavor -> {
                 dishFlavor.setDishId(dishId);
             });
-            dishFlavorMapper.inserBatch(dishFlavors);
+            dishFlavorMapper.insertBatch(dishFlavors);
         }
     }
 
@@ -73,10 +73,40 @@ public class DishServiceImpl implements DishService {
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
         // 删除菜品数据
-        for (Long id : ids){
+        for (Long id : ids) {
             dishMapper.deleteById(id);
             // 删除菜品关联的口味数据
             dishFlavorMapper.deleteByDishId(id);
+        }
+    }
+
+    public DishVO getByIdWithFlavor(Long id) {
+        Dish dish = dishMapper.queryById(id);
+        List<DishFlavor> dishFlavors = dishFlavorMapper.queryByDishId(id);
+
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+        dishVO.setFlavors(dishFlavors);
+
+        return dishVO;
+    }
+
+    @Transactional
+    public void updateWithFlavor(DishDTO dishDTO) {
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.update(dish);
+
+        Long dishId = dish.getId();
+        dishFlavorMapper.deleteByDishId(dishId);
+
+        List<DishFlavor> dishFlavors = dishDTO.getFlavors();
+
+        if (dishFlavors != null && dishFlavors.size() > 0) {
+            dishFlavors.forEach(dishFlavor -> {
+                dishFlavor.setDishId(dishId);
+            });
+            dishFlavorMapper.insertBatch(dishFlavors);
         }
     }
 }
