@@ -15,3 +15,6 @@ sky:
     access-key-id:
     access-key-secret:
     bucket-name:
+  wechat:
+    appid:
+    secret:
