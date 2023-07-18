@@ -33,4 +33,11 @@
         </set>
         where id = #{id}
     </update>
+
+    <select id="update" parameterType="com.sky.entity.Dish">
+        select * from dish
+        <where>
+            <if test="categoryId != null">category_id = #{categoryId}</if>
+        </where>
+    </select>
 </mapper>
