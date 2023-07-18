@@ -86,7 +86,6 @@ public class DishController {
         return Result.success(list);
     }
 
-
     private void deleteAllRedisKeys() {
         // 直接移除所有dish_父类id缓存
         Set keys = redisTemplate.keys("dish_*");
