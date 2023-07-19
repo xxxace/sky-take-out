@@ -68,4 +68,18 @@ public class ShoppingCarImpl implements ShoppingCarService {
             shoppingCarMapper.insert(shoppingCart);
         }
     }
+
+    public List<ShoppingCart> showShoppingCar() {
+        Long userId = BaseContext.getCurrentId();
+        ShoppingCart shoppingCart = ShoppingCart.builder()
+                .userId(userId)
+                .build();
+        List<ShoppingCart> shoppingCartList = shoppingCarMapper.list(shoppingCart);
+        return shoppingCartList;
+    }
+
+    public void clearShoppingCar() {
+        Long userId = BaseContext.getCurrentId();
+        shoppingCarMapper.deleteByUserId(userId);
+    }
 }
