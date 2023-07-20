@@ -36,7 +36,7 @@ public class OrderImpl implements OrderService {
     @Autowired
     private AddressBookMapper addressBookMapper;
     @Autowired
-    private ShoppingCarMapper shoppingCarMapper;
+    private ShoppingCartMapper shoppingCarMapper;
     @Autowired
     private UserMapper userMapper;
     @Autowired

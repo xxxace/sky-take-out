@@ -8,8 +8,8 @@ import com.sky.entity.ShoppingCart;
 import com.sky.exception.ShoppingCartBusinessException;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.SetmealMapper;
-import com.sky.mapper.ShoppingCarMapper;
-import com.sky.service.ShoppingCarService;
+import com.sky.mapper.ShoppingCartMapper;
+import com.sky.service.ShoppingCartService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,28 +20,28 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class ShoppingCarImpl implements ShoppingCarService {
+public class ShoppingCarImpl implements ShoppingCartService {
 
     @Autowired
-    private ShoppingCarMapper shoppingCarMapper;
+    private ShoppingCartMapper shoppingCartMapper;
     @Autowired
     private DishMapper dishMapper;
     @Autowired
     private SetmealMapper setmealMapper;
 
-    public void addToShoppingCar(ShoppingCartDTO shoppingCartDTO) {
+    public void addToShoppingCart(ShoppingCartDTO shoppingCartDTO) {
         Long userId = BaseContext.getCurrentId();
         ShoppingCart shoppingCart = new ShoppingCart();
         BeanUtils.copyProperties(shoppingCartDTO, shoppingCart);
         shoppingCart.setUserId(userId);
 
-        List<ShoppingCart> list = shoppingCarMapper.list(shoppingCart);
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
 
         // 如果已经存在
         if (list != null && list.size() > 0) {
             ShoppingCart item = list.get(0);
             item.setNumber(item.getNumber() + 1);
-            shoppingCarMapper.updateNumber(item);
+            shoppingCartMapper.updateNumber(item);
         } else {
             // 菜品
             Long dishId = shoppingCartDTO.getDishId();
@@ -65,21 +65,21 @@ public class ShoppingCarImpl implements ShoppingCarService {
             shoppingCart.setNumber(1);
             shoppingCart.setCreateTime(LocalDateTime.now());
 
-            shoppingCarMapper.insert(shoppingCart);
+            shoppingCartMapper.insert(shoppingCart);
         }
     }
 
-    public List<ShoppingCart> showShoppingCar() {
+    public List<ShoppingCart> showShoppingCart() {
         Long userId = BaseContext.getCurrentId();
         ShoppingCart shoppingCart = ShoppingCart.builder()
                 .userId(userId)
                 .build();
-        List<ShoppingCart> shoppingCartList = shoppingCarMapper.list(shoppingCart);
+        List<ShoppingCart> shoppingCartList = shoppingCartMapper.list(shoppingCart);
         return shoppingCartList;
     }
 
-    public void clearShoppingCar() {
+    public void clearShoppingCart() {
         Long userId = BaseContext.getCurrentId();
-        shoppingCarMapper.deleteByUserId(userId);
+        shoppingCartMapper.deleteByUserId(userId);
     }
 }
