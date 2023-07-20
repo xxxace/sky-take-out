@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
@@ -14,6 +15,7 @@ import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
-public class OrderImpl implements OrderService {
+public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMapper orderMapper;
@@ -41,6 +45,8 @@ public class OrderImpl implements OrderService {
     private UserMapper userMapper;
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+    @Autowired
+    private WebSocketServer webSocketServer;
 
     @Transactional
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
@@ -74,10 +80,10 @@ public class OrderImpl implements OrderService {
 
         // 创建订单明细
         List<OrderDetail> orderDetailList = new ArrayList<>();
-        for(ShoppingCart item : shoppingCartList){
+        for (ShoppingCart item : shoppingCartList) {
             // 插入数据库
             OrderDetail orderDetail = new OrderDetail();
-            BeanUtils.copyProperties(item,orderDetail);
+            BeanUtils.copyProperties(item, orderDetail);
             orderDetail.setOrderId(orderId);
             orderDetail.setId(null);
             orderDetailList.add(orderDetail);
@@ -148,5 +154,11 @@ public class OrderImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        Map map = new HashMap<>();
+        map.put("type", 1);
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号： " + outTradeNo);
+        webSocketServer.sendToAllClients(JSON.toJSONString(map));
     }
 }
