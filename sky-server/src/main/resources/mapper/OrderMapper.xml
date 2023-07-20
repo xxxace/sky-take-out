@@ -42,4 +42,8 @@
         </set>
         where id = #{id}
     </update>
+
+    <select id="getTimeoutOrders" resultType="Orders">
+        select id from orders where status = ${status} and order_time &lt; #{currentTime}
+    </select>
 </mapper>
