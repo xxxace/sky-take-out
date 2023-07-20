@@ -19,6 +19,7 @@ import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -156,9 +157,38 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
 
         Map map = new HashMap<>();
-        map.put("type", 1);
+        map.put("type", 1); // 1：来单提醒 2：客户催单
         map.put("orderId", ordersDB.getId());
         map.put("content", "订单号： " + outTradeNo);
+        webSocketServer.sendToAllClients(JSON.toJSONString(map));
+    }
+
+    public void complete(Long id) {
+        Orders ordersDB = orderMapper.getById(id);
+
+        if (ordersDB == null || !ordersDB.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders orders = new Orders();
+        orders.setId(ordersDB.getId());
+        orders.setStatus(Orders.COMPLETED);
+        orders.setDeliveryTime(LocalDateTime.now());
+
+        orderMapper.update(orders);
+    }
+
+    public void reminder(Long id) {
+        Orders ordersDB = orderMapper.getById(id);
+
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map map = new HashMap<>();
+        map.put("type", 2); // 1：来单提醒 2：客户催单
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号： " + ordersDB.getNumber());
         webSocketServer.sendToAllClients(JSON.toJSONString(map));
     }
 }

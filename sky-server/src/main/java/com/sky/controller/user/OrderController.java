@@ -23,7 +23,7 @@ public class OrderController {
 
     @PostMapping("/submit")
     @ApiOperation("提交订单")
-    public Result<OrderSubmitVO> submit(@RequestBody OrdersSubmitDTO ordersSubmitDTO){
+    public Result<OrderSubmitVO> submit(@RequestBody OrdersSubmitDTO ordersSubmitDTO) {
         OrderSubmitVO orderVo = orderService.submitOrder(ordersSubmitDTO);
         return Result.success(orderVo);
     }
@@ -43,4 +43,10 @@ public class OrderController {
         return Result.success(orderPaymentVO);
     }
 
+    @GetMapping("/reminder/{orderId}")
+    @ApiOperation("客户催单")
+    public Result reminder(@PathVariable Long orderId) {
+        orderService.reminder(orderId);
+        return Result.success();
+    }
 }

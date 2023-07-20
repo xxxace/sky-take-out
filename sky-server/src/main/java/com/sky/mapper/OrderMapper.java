@@ -27,4 +27,7 @@ public interface OrderMapper {
     void update(Orders orders);
 
     List<Orders> getTimeoutOrders(Integer status, LocalDateTime orderTimeLT);
+
+    @Select("select * from orders where id = #{id}")
+    Orders getById(Long id);
 }
