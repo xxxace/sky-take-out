@@ -44,7 +44,7 @@
     </update>
 
     <select id="getTimeoutOrders" resultType="Orders">
-        select id from orders where status = ${status} and order_time &lt; #{currentTime}
+        select id from orders where status = ${status} and order_time &lt; #{orderTimeLT}
     </select>
 
     <select id="sumAmountByDateTimeAndStatus" resultType="java.lang.Double">
@@ -60,5 +60,35 @@
                 AND status = #{status}
             </if>
         </where>
+    </select>
+
+    <select id="countOrdersByDateTimeAndStatus" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM orders
+        <where>
+            <if test="dateTime != null and dateTime.begin != null">
+                AND order_time &gt; #{dateTime.begin}
+            </if>
+            <if test="dateTime != null and dateTime.end != null">
+                AND order_time &lt; #{dateTime.end}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <select id="getSalesTop" resultType="com.sky.dto.GoodsSalesDTO">
+        SELECT od.name, SUM(od.number) number
+        FROM order_detail od, orders o
+        WHERE od.id = o.id AND o.status = 5
+        <if test="begin != null">
+            AND o.order_time &gt; #{begin}
+        </if>
+        <if test="end != null">
+            AND o.order_time &gt; #{end}
+        </if>
+        GROUP BY od.name
+        ORDER BY number DESC
+        LIMIT 0,10
     </select>
 </mapper>
