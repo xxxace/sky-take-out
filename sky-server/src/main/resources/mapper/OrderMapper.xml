@@ -46,4 +46,19 @@
     <select id="getTimeoutOrders" resultType="Orders">
         select id from orders where status = ${status} and order_time &lt; #{currentTime}
     </select>
+
+    <select id="sumAmountByDateTimeAndStatus" resultType="java.lang.Double">
+        SELECT SUM(amount) FROM orders
+        <where>
+            <if test="dateTime != null and dateTime.begin != null">
+                AND order_time &gt; #{dateTime.begin}
+            </if>
+            <if test="dateTime != null and dateTime.end != null">
+                AND order_time &lt; #{dateTime.end}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
 </mapper>

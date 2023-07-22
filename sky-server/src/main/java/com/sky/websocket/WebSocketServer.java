@@ -28,7 +28,7 @@ public class WebSocketServer {
     }
 
     @OnClose
-    public void onClose(String message, @PathParam("sid") String sid) {
+    public void onClose(@PathParam("sid") String sid) {
         sessionMap.remove(sid);
     }
 
