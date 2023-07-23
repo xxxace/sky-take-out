@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper {
@@ -33,9 +34,9 @@ public interface OrderMapper {
     @Select("select * from orders where id = #{id}")
     Orders getById(Long id);
 
-    Double sumAmountByDateTimeAndStatus(HashMap<String, LocalDateTime> dateTime, Integer status);
+    Double sumAmountByDateTimeAndStatus(Map<String, LocalDateTime> dateTime, Integer status);
 
-    Integer countOrdersByDateTimeAndStatus(HashMap<String, LocalDateTime> dateTime, Integer status);
+    Integer countOrdersByDateTimeAndStatus(Map<String, LocalDateTime> dateTime, Integer status);
 
     List<GoodsSalesDTO> getSalesTop(LocalDateTime begin, LocalDateTime end);
 }
